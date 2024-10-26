@@ -16,6 +16,7 @@ enum DataStructure { VECTOR, LIST, SET }; // this enum is used to specify the da
 long long raceReading(DataStructure dataStructure);
 long long raceSorting(DataStructure dataStructure);
 long long raceInsertion(DataStructure dataStructure);
+long long raceDeletion(DataStructure dataStructure);
 
 /* CONSTANTS */
 const string FILE_NAME = "codes.txt"; // file name
@@ -44,6 +45,7 @@ int main() {
 	cout << setw(10) << "Read" << setw(10) << raceReading(VECTOR) << setw(10) << raceReading(LIST) << setw(10) << raceReading(SET) << endl; // output read duration
 	cout << setw(10) << "Sort" << setw(10) << raceSorting(VECTOR) << setw(10) << raceSorting(LIST) << setw(10) << raceSorting(SET) << endl; // output sort duration
 	cout << setw(10) << "Insert" << setw(10) << raceInsertion(VECTOR) << setw(10) << raceInsertion(LIST) << setw(10) << raceInsertion(SET) << endl; // output insert duration
+	cout << setw(10) << "Delete" << setw(10) << raceDeletion(VECTOR) << setw(10) << raceDeletion(LIST) << setw(10) << raceDeletion(SET) << endl; // output delete duration
 
 	fin.close(); // close file
 
@@ -61,7 +63,7 @@ long long raceReading(DataStructure dataStructure) {
 	string code; // to hold the input codes
 	auto start = high_resolution_clock::now(); // start time
 
-	switch (dataStructure) { // switch statement to determine data structure
+	switch (dataStructure) { // switch statement to determine data structure (switch statements make the code more readable and scalable)
 
 	case VECTOR: // if data structure is vector
 
@@ -175,9 +177,39 @@ long long raceInsertion(DataStructure dataStructure) {
 
 }
 
-/* syntax examples:
-auto start = high_resolution_clock::now()
-auto end = high_resolution_clock::now()
-auto duration = duration_cast<milliseconds>(end - start)
-duration.count() references elapsed milliseconds
-*/
+// raceDeletion() deletes a code from the middle of the given data structure
+// arguments: DataStructure dataStructure - the data structure to store the codes in
+// returns: long long - the duration of the operation in milliseconds
+long long raceDeletion(DataStructure dataStructure) {
+
+	fin.seekg(0, ios::beg); // go to beginning of file
+
+	string code; // to hold the input codes
+	auto start = high_resolution_clock::now(); // start time
+	list<string>::iterator it = l.begin(); // iterator to traverse list (once again, unfortunately, the iterator has to be declared here because it cannot be declared in the switch statement)
+
+	switch (dataStructure) { // switch statement to determine data structure
+
+	case VECTOR: // if data structure is vector
+
+		v.erase(v.begin() + 10000); // delete value from the middle of the vector
+		break;
+
+	case LIST: // if data structure is list
+
+		advance(it, 10000); // advance iterator to middle of list
+		l.erase(it); // delete value from the middle of the list
+		break;
+
+	case SET: // if data structure is set
+
+		s.erase("TESTCODE"); // delete value from the set
+		break;
+
+	}
+
+	auto end = high_resolution_clock::now(); // end time
+	auto duration = duration_cast<milliseconds>(end - start); // duration
+	return duration.count(); // return duration
+
+}
