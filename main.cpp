@@ -15,12 +15,16 @@ enum DataStructure { VECTOR, LIST, SET }; // this enum is used to specify the da
 /* FUNCTION PROTOTYPES */
 long long raceReading(DataStructure dataStructure);
 long long raceSorting(DataStructure dataStructure);
+long long raceInsertion(DataStructure dataStructure);
 
 /* CONSTANTS */
 const string FILE_NAME = "codes.txt"; // file name
 
 /* GLOBAL VARIABLES */
 ifstream fin;
+vector<string> v;
+list<string> l;
+set<string> s;
 
 // main() is the entry point of the program and drives the program
 // arguments: none
@@ -38,6 +42,8 @@ int main() {
 
 	cout << setw(10) << "Operation" << setw(10) << "Vector" << setw(10) << "List" << setw(10) << "Set" << endl; // output header
 	cout << setw(10) << "Read" << setw(10) << raceReading(VECTOR) << setw(10) << raceReading(LIST) << setw(10) << raceReading(SET) << endl; // output read duration
+	cout << setw(10) << "Sort" << setw(10) << raceSorting(VECTOR) << setw(10) << raceSorting(LIST) << setw(10) << raceSorting(SET) << endl; // output sort duration
+	cout << setw(10) << "Insert" << setw(10) << raceInsertion(VECTOR) << setw(10) << raceInsertion(LIST) << setw(10) << raceInsertion(SET) << endl; // output insert duration
 
 	fin.close(); // close file
 
@@ -45,7 +51,7 @@ int main() {
 
 }
 
-// raceReading() reads codes from a file and stores them in a data structure
+// raceReading() reads codes from a file and stores them in the given data structure
 // arguments: DataStructure dataStructure - the data structure to store the codes in
 // returns: long long - the duration of the operation in milliseconds
 long long raceReading(DataStructure dataStructure) {
@@ -55,10 +61,9 @@ long long raceReading(DataStructure dataStructure) {
 	string code; // to hold the input codes
 	auto start = high_resolution_clock::now(); // start time
 
-	// this series of if statements can be replaced with a switch statement, but you can't create vectors or lists in a switch statement (I wasn't aware that this was a thing, but Visual Studio gives an error when I try to do so)
-	if (dataStructure == VECTOR) { // if data structure is vector
+	switch (dataStructure) { // switch statement to determine data structure
 
-		vector<string> v;
+	case VECTOR: // if data structure is vector
 
 		while (!fin.eof()) { // while the end of the file has not been reached
 
@@ -66,9 +71,10 @@ long long raceReading(DataStructure dataStructure) {
 			v.push_back(code); // add code to vector
 
 		}
-	} else if (dataStructure == LIST) { // if data structure is list
 
-		list<string> l;
+		break;
+
+	case LIST: // if data structure is list
 
 		while (!fin.eof()) { // while the end of the file has not been reached
 
@@ -76,9 +82,10 @@ long long raceReading(DataStructure dataStructure) {
 			l.push_back(code); // add code to list
 
 		}
-	} else if (dataStructure == SET) { // if data structure is set
 
-		set<string> s;
+		break;
+
+	case SET: // if data structure is set
 
 		while (!fin.eof()) { // while the end of the file has not been reached
 
@@ -86,6 +93,9 @@ long long raceReading(DataStructure dataStructure) {
 			s.insert(code); // add code to set
 
 		}
+
+		break;
+
 	}
 
 	auto end = high_resolution_clock::now(); // end time
@@ -94,7 +104,7 @@ long long raceReading(DataStructure dataStructure) {
 
 }
 
-// raceSorting() reads codes from a file, stores them in a data structure, and then sorts them
+// raceSorting() sorts the codes in the given data structure
 // arguments: DataStructure dataStructure - the data structure to store the codes in
 // returns: long long - the duration of the operation in milliseconds
 long long raceSorting(DataStructure dataStructure) {
@@ -104,36 +114,58 @@ long long raceSorting(DataStructure dataStructure) {
 	string code; // to hold the input codes
 	auto start = high_resolution_clock::now(); // start time
 
-	// once again, this series of if statements can be replaced with a switch statement, but you can't create vectors or lists in a switch statement
-	if (dataStructure == VECTOR) { // if data structure is vector
+	switch (dataStructure) { // switch statement to determine data structure
 
-		vector<string> v;
-
-		while (!fin.eof()) { // while the end of the file has not been reached
-
-			fin >> code; // read code
-			v.push_back(code); // add code to vector
-
-		}
+	case VECTOR: // if data structure is vector
 
 		sort(v.begin(), v.end()); // sort vector
+		break;
 
-	} else if (dataStructure == LIST) { // if data structure is list
-
-		list<string> l;
-
-		while (!fin.eof()) { // while the end of the file has not been reached
-
-			fin >> code; // read code
-			l.push_back(code); // add code to list
-
-		}
+	case LIST: // if data structure is list
 
 		l.sort(); // sort list
+		break;
 
-	} else if (dataStructure == SET) { // if data structure is set
+	case SET: // if data structure is set
 
 		return -1; // return -1 because sets are already sorted
+
+	}
+
+	auto end = high_resolution_clock::now(); // end time
+	auto duration = duration_cast<milliseconds>(end - start); // duration
+	return duration.count(); // return duration
+
+}
+
+// raceInsertion() inserts a new code into the middle of the given data structure
+// arguments: DataStructure dataStructure - the data structure to store the codes in
+// returns: long long - the duration of the operation in milliseconds
+long long raceInsertion(DataStructure dataStructure) {
+
+	fin.seekg(0, ios::beg); // go to beginning of file
+
+	string code; // to hold the input codes
+	auto start = high_resolution_clock::now(); // start time
+	list<string>::iterator it = l.begin(); // iterator to traverse list (unfortunately, the iterator has to be declared here because it cannot be declared in the switch statement)
+
+	switch (dataStructure) { // switch statement to determine data structure
+
+	case VECTOR: // if data structure is vector
+
+		v.insert(v.begin() + 10000, "TESTCODE"); // add new value to the middle of the vector
+		break;
+
+	case LIST: // if data structure is list
+
+		advance(it, 10000); // advance iterator to middle of list
+		l.insert(it, "TESTCODE"); // add new value to the middle of the list
+		break;
+
+	case SET: // if data structure is set
+
+		s.insert("TESTCODE"); // add new value to the set
+		break;
 
 	}
 
